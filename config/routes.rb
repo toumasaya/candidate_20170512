@@ -1,3 +1,8 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  root "welcome#index"
+
+  # get "/candidates", to: "candidates#index"
+  # get "/candidates/:id", to: "candidates#show"
+  
+  resources :candidates # 慣例是複數
 end
