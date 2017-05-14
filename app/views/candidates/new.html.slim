@@ -1,3 +1,24 @@
 h1 Create a candidate
 
-/ - form_for Candidate.new do |f|
+- if @candidate.errors.full_messages.any?
+  - @candidate.errors.full_messages.each do |msg| 
+    = msg
+
+= simple_form_for @candidate do |f|
+  = f.input :name, label: "Name"
+  = f.input :party, label: "Party"
+  = f.input :age, label: "Age"
+  = f.input :politics, label: "Politics"
+  / = f.text_field :party, class: "form-control"
+  / Name: = f.text_field :age
+  / Name: = f.text_field :neme
+  / Name: = f.text_field :politics
+  = f.submit "Submit", class: "btn btn-primary"
+
+.alert.alert-success
+  p test
+
+/ = simple_form_for @project, url: projects_path, method: :post, html: { class: "new-project form-horizontal" }, wrapper: :horizontal_form do |f|
+    = render partial: "form", object: f, as: :f
+
+/ = f.input :name, label: "名稱"
