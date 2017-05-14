@@ -1,5 +1,5 @@
 class CandidatesController < ApplicationController
-  before_action :find_candidate, only: [:show, :edit, :update, :destroy]
+  before_action :find_candidate, only: [:show, :edit, :update, :destroy, :vote]
 
   def index
     @candidates = Candidate.all
@@ -56,6 +56,15 @@ class CandidatesController < ApplicationController
     # redirect_to candidates_path if @candidate.nil? # 防呆
     @candidate.destroy
     redirect_to candidates_path, notice: "Delete!"
+  end
+
+  def vote
+    # @candidate.votes = @candidate.votes + 1
+    # or
+    @candidate.increment(:votes)
+    
+    @candidate.save
+    redirect_to candidates_path
   end
 
   private 

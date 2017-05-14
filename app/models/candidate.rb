@@ -5,6 +5,10 @@ class Candidate < ApplicationRecord
   before_save :add_name
   # before_create :encrypt_email
 
+  def info
+    "#{name}, Age: #{age}"
+  end
+
   private
   # def encrypt_email
   #   self.password = ...
