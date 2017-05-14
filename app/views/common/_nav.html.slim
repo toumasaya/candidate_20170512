@@ -1,0 +1,18 @@
+nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
+  button.navbar-toggler.navbar-toggler-right aria-controls="navbarSupportedContent" aria-expanded="false" aria-label=("Toggle navigation") data-target="#navbarSupportedContent" data-toggle="collapse" type="button" 
+    span.navbar-toggler-icon
+  a.navbar-brand href="#"  Navbar
+  #navbarSupportedContent.collapse.navbar-collapse
+    ul.navbar-nav.mr-auto
+      li.nav-item.active
+        = link_to 'Home', candidates_path, class: "nav-link"
+        / a.nav-link href="#" 
+        /   | Home
+        /   span.sr-only (current)
+      li.nav-item
+        = link_to 'Create new candidate', new_candidate_path, class: "nav-link"
+      li.nav-item
+        a.nav-link.disabled href="#"  Disabled
+    form.form-inline.my-2.my-lg-0
+      input.form-control.mr-sm-2 placeholder="Search" type="text" /
+      button.btn.btn-outline-success.my-2.my-sm-0 type="submit"  Search
