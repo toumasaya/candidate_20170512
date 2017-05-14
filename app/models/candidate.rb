@@ -1,5 +1,6 @@
 class Candidate < ApplicationRecord
   validates :name, presence: true
+  has_many :vote_logs
 
   # 處理資料有關的邏輯，就寫在 model
   before_save :add_name
