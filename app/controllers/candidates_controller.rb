@@ -1,4 +1,6 @@
 class CandidatesController < ApplicationController
+  before_action :find_candidate, only: [:show, :edit, :update, :destroy]
+
   def index
     @candidates = Candidate.all
   end
@@ -6,8 +8,8 @@ class CandidatesController < ApplicationController
   def show
     # enter the byebug console
     # byebug
-    @candidate = Candidate.find_by(id: params[:id])
-    redirect_to candidates_path if @candidate.nil? # 防呆
+    # @candidate = Candidate.find_by(id: params[:id]) # before_action
+    # redirect_to candidates_path if @candidate.nil? # 防呆
   end
 
   def new
@@ -34,13 +36,13 @@ class CandidatesController < ApplicationController
   end
 
   def edit
-    @candidate = Candidate.find_by(id: params[:id])
-    redirect_to candidates_path if @candidate.nil? # 防呆
+    # @candidate = Candidate.find_by(id: params[:id]) # before_action
+    # redirect_to candidates_path if @candidate.nil? # 防呆
   end
 
   def update
-    @candidate = Candidate.find_by(id: params[:id])
-    redirect_to candidates_path if @candidate.nil? # 防呆
+    # @candidate = Candidate.find_by(id: params[:id]) # before_action
+    # redirect_to candidates_path if @candidate.nil? # 防呆
 
     if @candidate.update(candidate_params)
       redirect_to candidate_path(@candidate), notice: "Work"
@@ -50,7 +52,8 @@ class CandidatesController < ApplicationController
   end
 
   def destroy
-    @candidate = Candidate.find_by(id: params[:id])
+    # @candidate = Candidate.find_by(id: params[:id]) # before_action
+    # redirect_to candidates_path if @candidate.nil? # 防呆
     @candidate.destroy
     redirect_to candidates_path, notice: "Delete!"
   end
@@ -59,5 +62,10 @@ class CandidatesController < ApplicationController
     # clean 
     def candidate_params
       params.require(:candidate).permit(:name, :party, :age, :politics)
+    end
+
+    def find_candidate
+      @candidate = Candidate.find_by(id: params[:id])
+      redirect_to candidates_path if @candidate.nil? # 防呆
     end
 end

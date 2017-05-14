@@ -4,7 +4,8 @@ h1 Edit a candidate
   - @candidate.errors.full_messages.each do |msg| 
     = msg
 
-= render partial: "form"
+/ = render partial: "form", candidate: @candidate
+= render "form", candidate: @candidate
 
 / = simple_form_for @candidate do |f|
 /   = f.input :name, label: "Name"

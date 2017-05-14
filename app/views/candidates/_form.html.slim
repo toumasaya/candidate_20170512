@@ -1,4 +1,6 @@
-= simple_form_for @candidate do |f|
+/ 餵食 form_for，不要讓 form_for 期待頁面上有 @candidate 
+/ = simple_form_for @candidate do |f|
+= simple_form_for(candidate) do |f|
   = f.input :name, label: "Name"
   = f.input :party, label: "Party"
   = f.input :age, label: "Age"

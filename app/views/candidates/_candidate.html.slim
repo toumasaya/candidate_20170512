@@ -1,0 +1,29 @@
+.row
+  - @candidates.each do |candidate|
+    .card.col-md-3
+      .card-block
+        h4.card-title= candidate.name
+        p.card-text= candidate.party
+        p.card-text= candidate.age
+        .btn-group
+          / this will work too, cause it just needs ids
+          / = link_to 'Detail', candidate, class: "btn btn-secondary"
+          = link_to 'Detail', candidate_path(candidate), class: "btn btn-secondary"
+          = link_to 'Edit', edit_candidate_path(candidate), class: "btn btn-secondary"
+          / = link_to 'Delete', candidate, method: :delete, class: "btn btn-danger", data: { confirm: "Sure?"}
+          = link_to 'Delete', candidate_path(candidate), method: :delete, class: "btn btn-danger", data: { confirm: "Sure?"}
+
+/ collection
+/ .row
+/   .card.col-md-3
+/     .card-block
+/       h4.card-title= candidate.name
+/       p.card-text= candidate.party
+/       p.card-text= candidate.age
+/       .btn-group
+/         / this will work too, cause it just needs ids
+/         / = link_to 'Detail', candidate, class: "btn btn-secondary"
+/         = link_to 'Detail', candidate_path(candidate), class: "btn btn-secondary"
+/         = link_to 'Edit', edit_candidate_path(candidate), class: "btn btn-secondary"
+/         / = link_to 'Delete', candidate, method: :delete, class: "btn btn-danger", data: { confirm: "Sure?"}
+/         = link_to 'Delete', candidate_path(candidate), method: :delete, class: "btn btn-danger", data: { confirm: "Sure?"}
