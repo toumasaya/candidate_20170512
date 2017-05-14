@@ -59,11 +59,18 @@ class CandidatesController < ApplicationController
   end
 
   def vote
+    # method 1
+    # log = VoteLog.new(ip_address: request.remote_ip, candidate: @candidate)
+    # log.save
+    
+    # method 2, 從 candidate 角度建立新的投票紀錄
+    @candidate.vote_logs.create(ip_address: request.remote_ip)
+
     # @candidate.votes = @candidate.votes + 1
     # or
-    @candidate.increment(:votes)
+    # @candidate.increment(:votes)
     
-    @candidate.save
+    # @candidate.save
     redirect_to candidates_path
   end
 

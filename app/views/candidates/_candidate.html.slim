@@ -5,7 +5,9 @@
         h4.card-title= candidate.name
         p.card-text= candidate.party
         p.card-text= candidate.age
-        p.card-text= candidate.votes
+        / p.card-text= candidate.votes
+        / p.card-text= candidate.vote_logs.count
+        p.card-text= candidate.vote_logs.size
         
         = link_to 'Vote', vote_candidate_path(candidate), method: :post, data: { confirm: "Sure?" }, class: "btn btn-sm btn-link"
         / this will work too, cause it just needs ids
