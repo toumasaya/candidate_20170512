@@ -1,39 +1,21 @@
 .row
   - @candidates.each do |candidate|
-    .card.col-md-3
-      .card-block
-        h4.card-title= candidate.name
-        p.card-text= candidate.party
-        p.card-text= candidate.age
-        / p.card-text= candidate.votes
-        / p.card-text= candidate.vote_logs.count
-        p.card-text= candidate.vote_logs.size
-        
-        = link_to 'Vote', vote_candidate_path(candidate), method: :post, data: { confirm: "Sure?" }, class: "btn btn-sm btn-link"
-        / this will work too, cause it just needs ids
-        / = link_to 'Detail', candidate, class: "btn btn-secondary"
-        = link_to 'Detail', candidate_path(candidate), class: "btn btn-sm btn-link"
-        = link_to 'Edit', edit_candidate_path(candidate), class: "btn btn-sm btn-link"
-        / = link_to 'Delete', candidate, method: :delete, class: "btn btn-danger", data: { confirm: "Sure?"}
-        = link_to 'Delete', candidate_path(candidate), method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: "Sure?"}
+    .col-md-3
+      .card
+        = image_tag candidate.photo, class: "card-img-top"
+        .card-block
+          h4.card-title= candidate.name
+          p.card-text= candidate.party
+          p.card-text= candidate.age
+          p.card-text= candidate.vote_logs.size
+          
+          = link_to 'Vote', vote_candidate_path(candidate), method: :post, data: { confirm: "Sure?" }, class: "btn btn-sm btn-link"
+          = link_to 'Detail', candidate_path(candidate), class: "btn btn-sm btn-link"
+          = link_to 'Edit', edit_candidate_path(candidate), class: "btn btn-sm btn-link"
+          = link_to 'Delete', candidate_path(candidate), method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: "Sure?"}
 
           / model method info
           / = link_to 'Detail', candidate.info
 
           / helper
           / = link_to 'Detail', candidate_info(candidate)
-
-/ collection
-/ .row
-/   .card.col-md-3
-/     .card-block
-/       h4.card-title= candidate.name
-/       p.card-text= candidate.party
-/       p.card-text= candidate.age
-/       .btn-group
-/         / this will work too, cause it just needs ids
-/         / = link_to 'Detail', candidate, class: "btn btn-secondary"
-/         = link_to 'Detail', candidate_path(candidate), class: "btn btn-secondary"
-/         = link_to 'Edit', edit_candidate_path(candidate), class: "btn btn-secondary"
-/         / = link_to 'Delete', candidate, method: :delete, class: "btn btn-danger", data: { confirm: "Sure?"}
-/         = link_to 'Delete', candidate_path(candidate), method: :delete, class: "btn btn-danger", data: { confirm: "Sure?"}

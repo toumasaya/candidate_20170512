@@ -3,7 +3,7 @@ class Candidate < ApplicationRecord
   has_many :vote_logs
 
   # 處理資料有關的邏輯，就寫在 model
-  before_save :add_name
+  # before_save :add_name
   # before_create :encrypt_email
 
   def info
@@ -14,7 +14,7 @@ class Candidate < ApplicationRecord
   # def encrypt_email
   #   self.password = ...
   # end
-  def add_name
-    self.name = "#{self.name} 9527" unless name.ends_with?("9527")
-  end
+  # def add_name
+  #   self.name = "#{self.name} 9527" unless name.ends_with?("9527")
+  # end
 end

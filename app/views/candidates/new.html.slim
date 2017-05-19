@@ -7,14 +7,4 @@ h1 Create a candidate
 / 預期會有 @candidate，變數名稱會被侷限在 @candidate
 / = render partial: "form"  
 = render partial: "form", locals: { candidate: @candidate } 
-/ = render partial: "form", candidate: @candidate / not work
 / = render "form", candidate: @candidate
-
-/ = simple_form_for @candidate do |f|
-/   = f.input :name, label: "Name"
-/   = f.input :party, label: "Party"
-/   = f.input :age, label: "Age"
-/   = f.input :politics, label: "Politics"
-/   = f.submit "Submit", class: "btn btn-primary"
-
-

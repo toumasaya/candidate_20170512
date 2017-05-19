@@ -8,8 +8,6 @@ class CandidatesController < ApplicationController
   def show
     # enter the byebug console
     # byebug
-    # @candidate = Candidate.find_by(id: params[:id]) # before_action
-    # redirect_to candidates_path if @candidate.nil? # 防呆
   end
 
   def new
@@ -36,14 +34,9 @@ class CandidatesController < ApplicationController
   end
 
   def edit
-    # @candidate = Candidate.find_by(id: params[:id]) # before_action
-    # redirect_to candidates_path if @candidate.nil? # 防呆
   end
 
   def update
-    # @candidate = Candidate.find_by(id: params[:id]) # before_action
-    # redirect_to candidates_path if @candidate.nil? # 防呆
-
     if @candidate.update(candidate_params)
       redirect_to candidate_path(@candidate), notice: "Work"
     else
@@ -52,8 +45,6 @@ class CandidatesController < ApplicationController
   end
 
   def destroy
-    # @candidate = Candidate.find_by(id: params[:id]) # before_action
-    # redirect_to candidates_path if @candidate.nil? # 防呆
     @candidate.destroy
     redirect_to candidates_path, notice: "Delete!"
   end
