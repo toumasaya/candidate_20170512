@@ -5,3 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+30.times do
+  Candidate.create!(
+    name: Faker::HarryPotter.character,
+    party: Faker::HarryPotter.location,
+    age: Faker::Number.between(14, 100),
+    politics: Faker::HarryPotter.quote,
+    photo: Faker::Avatar.image("my-own-slug")
+  )
+end
