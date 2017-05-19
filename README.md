@@ -469,6 +469,8 @@ end
 
 ### 重構 view
 
+#### _form.html.slim
+
 `new` 和 `edit` 的表單其實有 87% 像，所以可以把表單取出來存成另一個檔案，稱之為 partial，檔名前面要加底線，例如 `_form.html.slim`:
 
 ```ruby
@@ -522,9 +524,278 @@ end
 = render partial: "form", candidate: @candidate # error
 ```
 
+#### _candidate.html.slim
+
+在 `views/candidates/index.html.slim` 的 `simple_form_for` 也可以取出來：
+
+```ruby
+# views/candidates/index.html.slim
+
+h1 Candidate lists
+
+= render "candidate"
+```
+
+```ruby
+# views/candidates/_candidate.html.slim
+
+- @candidates.each do |candidate|
+  h4.card-title= candidate.name
+  p.card-text= candidate.party
+  p.card-text= candidate.age
+  = link_to 'Detail', candidate_path(candidate)
+  = link_to 'Edit', edit_candidate_path(candidate)
+  = link_to 'Delete', candidate_path(candidate), method: :delete, data: { confirm: "Sure?"}
+```
+
+其中，三個 `link_to` 的連結路徑都可以再簡化成：
+
+```ruby
+= link_to 'Detail', candidate
+= link_to 'Edit', candidate
+= link_to 'Delete', candidate, method: :delete
+```
+
+因為它需要的只是一個 `id`。
+
 ## 投票功能
 
+現在要加上投票功能。
 
+### 增加 vote routes
+
+預計要做一個 `/candidates/:id/vote` 的路徑，也就是會找出某個候選人 `id` 然後進行一個投票的動作。
+
+```ruby
+# config/routes.rb
+
+resources :candidates do
+  member do 
+    post :vote
+  end
+end
+```
+
+也可以寫成：
+
+```ruby
+resources :candidates do
+  post :vote, on: :member
+end
+```
+
+#### routes
+
+可以這樣做出路徑：
+
+```ruby
+get "/candidates", to: "candidates#index"
+get "/candidates/:id", to: "candidates#show"
+post "/candidate/:id/vote", to: "candidate#vote"
+```
+
+但如果需要更有系統的整理，通常就會利用 `resoureces`、`member`、`collection` 來整理相關的路徑。
+
+### 在 view 加上 vote link 和 vote count
+
+```ruby
+# views/candidates/_candidate.html.slim
+
+- @candidates.each do |candidate|
+  h4.card-title= candidate.name
+  p.card-text= candidate.party
+  p.card-text= candidate.age
+  p.card-text= candidate.votes
+  = link_to 'Vote', vote_candidate_path(candidate), method: :post, data: { confirm: "Sure?" }
+  = link_to 'Detail', candidate_path(candidate)
+  = link_to 'Edit', edit_candidate_path(candidate)
+  = link_to 'Delete', candidate_path(candidate), method: :delete, data: { confirm: "Sure?"}
+```
+
+### 在 controller 加上 vote action
+
+```ruby
+# controllers/candidates_controller.rb
+
+def vote
+  @candidate.votes = @candidate.votes + 1
+  @candidate.save
+  redirect_to candidates_path
+end
+```
+
+其中也可以使用 `.increment` method：
+
+```ruby
+def vote
+  @candidate.increment(:votes)
+  @candidate.save
+  redirect_to candidates_path
+end
+```
+
+### 建立 VoteLog model 記錄投票資訊
+
+原本在 `candidates` table 建立了一個 `votes` column，不過如果想知道誰投票給候選人以及投票時間或是 IP，就無法得知。
+
+所以現在要多建立一個 `vote_logs` table，來關聯到 `candidates`，記錄投票資訊：
+
+|column|type|
+|--|--|
+|id|integer|
+|ip_address|string|
+|candidate_id|integer| 
+
+也就是會記錄：
+
+- 投票時間
+- 投票給誰
+- 投票時的 IP
+
+產生一個 `VoteLog` model：
+
+```shell
+$ rails g model VoteLog ip_address candidate_id:integer
+```
+也可以這樣寫：
+
+```shell
+$ rails g model VoteLog ip_address candidate:references
+```
+
+`candidate:references` 除了會加上 foreign key (`candidate_id`)，還會加上 index。
+
+執行 `rails db:migrate`
+
+在 `Candidate` model 加上關聯：
+
+```ruby
+class Candidate < ApplicationRecord
+  has_many :vote_logs
+end
+```
+
+在 `VoteLog` model 加上關聯：
+
+```ruby
+class VoteLog < ApplicationRecord
+  belongs_to :candidate
+end
+```
+
+加上關聯後，會產生一些可以使用的 method，例如：
+
+```ruby
+Candidate.first.vote_logs # 查詢第一個候選人的得票記錄
+VoteLog.last.candidate # 查詢最後一張票投給該候選人的記錄
+```
+
+調整 `Candidates` controller 的 `vote` action：
+
+```ruby
+class CandidatesController < ApplicationController
+  .
+  .
+  def vote
+    log = VoteLog.new(ip_address: request.remote_ip, candidate: @candidate)
+    log.save
+
+    redirect_to candidates_path
+  end
+end
+```
+
+但其實也可以從候選人的角度去建立投票，比較直覺一點：
+
+```ruby
+class CandidatesController < ApplicationController
+  .
+  .
+  def vote
+    @candidate.vote_logs.create(ip_address: request.remote_ip)
+
+    redirect_to candidates_path
+  end
+end
+```
+
+接著調整 `_candidate.html.slim` 的 vote count ：
+
+```ruby
+# views/candidates/_candidate.html.slim
+
+# 原本
+candidate.votes
+
+# 改成
+candidate.vote_logs.count
+```
+
+### Counter Cache
+
+目前如果有 3 筆資料，但查看 log 會發現資料庫做了 4 次查詢，這是所謂的 N + 1 query 問題。簡單來說就是會耗效能。
+
+可以使用 Counter Cache 的做法解決：
+
+- 把投票結果「更新」到 `Candidate` model
+- 投票記錄會放在 `VoteLog` model
+
+為了要在 `Candidate` model 記錄「投票結果」，就要再開一個 `vote_logs_count:integer` column：
+
+```shell
+$ rails g migration add_counter_to_candidates vote_logs_count:integer
+```
+
+產生一個 migration，然後加上預設值為 0：
+
+```ruby
+class AddCounterToCandidates < ActiveRecord::Migration[5.0]
+  def change
+    add_column :candidates, :vote_logs_count, :integer, default: 0
+  end
+end
+```
+
+執行 `rails db:migrate`
+
+接著調整 `VoteLog` model：
+
+```ruby
+class VoteLog < ApplicationRecord
+  belongs_to :candidate, counter_cache: true
+end
+```
+
+再調整 `_candidate.html.slim`：
+
+```ruby
+# views/candidates/_candidate.html.slim
+
+# 原本
+candidate.vote_logs.count
+
+# 改成，因為原本的 count 還是會做 N + 1 query
+candidate.vote_logs.size
+```
+
+### 建立 lib/tasks/reset_counter.rake 清除投票紀錄
+
+```ruby
+namespace :vote do
+  desc "Reset Counter Cache"
+  task :reset_counter => :environment do
+    Candidate.all.each do |candidate|
+      Candidate.reset_counters(candidate.id, :vote_logs)
+    end
+  end
+end
+```
+
+執行起來會是：
+
+```shell
+$ rails vote:reset_counter
+```
 
 ## 安裝一些好用的 Gems
 
